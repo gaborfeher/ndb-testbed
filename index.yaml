@@ -1,0 +1,12 @@
+indexes:
+
+- kind: ProductCopy5
+  ancestor: yes
+  properties:
+  - name: i
+  - name: b1
+  - name: b2
+  - name: b3
+  - name: b4
+  - name: s
+
