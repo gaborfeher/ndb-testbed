@@ -20,10 +20,3 @@ vpc_access_connector:
 env_variables:
   REDIS_CACHE_URL: <FILL IN HERE>
 
-skip_files:
-- ^(.*/)?#.*#$
-- ^(.*/)?.*~$
-- ^(.*/)?.*\.py[co]$
-- ^(.*/)?.*/RCS/.*$
-- ^(.*/)?\..*$
-
