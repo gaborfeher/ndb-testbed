@@ -7,15 +7,23 @@ import gc
 
 app = Flask(__name__)
 
-if True:  # old/new ndb switch
+NEW_NDB = False
+DISABLE_CACHE = False
+
+if NEW_NDB:
     from google.cloud import ndb
     logging.getLogger('google.cloud.ndb').setLevel(logging.WARNING)
     def ndb_wsgi_middleware(wsgi_app):
         def middleware(environ, start_response):
             ndb_client = ndb.Client()
-            global_cache = ndb.RedisCache.from_environment()
-            global_cache.set({ 'hello': 'world' })
-            with ndb_client.context(global_cache=global_cache):
+            if DISABLE_CACHE:
+                global_cache = None
+            else:
+                global_cache = ndb.RedisCache.from_environment()
+            with ndb_client.context(global_cache=global_cache) as context:
+                if DISABLE_CACHE:
+                    context.set_cache_policy(False)
+                    context.set_memcache_policy(False)
                 result = wsgi_app(environ, start_response)
                 # gc.collect()  # (not needed in these tests, but sometimes needed) https://github.com/googleapis/python-ndb/issues/336
                 return result
@@ -23,6 +31,15 @@ if True:  # old/new ndb switch
     app.wsgi_app = ndb_wsgi_middleware(app.wsgi_app)
 else:
     from google.appengine.ext import ndb
+    def ndb_wsgi_middleware(wsgi_app):
+        def middleware(environ, start_response):
+            if DISABLE_CACHE:
+                context = ndb.get_context()
+                context.set_cache_policy(False)
+                context.set_memcache_policy(False)
+            return wsgi_app(environ, start_response)
+        return middleware
+    app.wsgi_app = ndb_wsgi_middleware(app.wsgi_app)
 
 
 class User(ndb.Model):
@@ -96,7 +113,7 @@ def test1():
     t1 = time.time()
     count = _query0().count()
     t2 = time.time()
-    return 'cnt= {}, time= {}s'.format(count, t2-t1)
+    return 'cnt= {}, time= {}'.format(count, t2-t1)
 
 
 @app.route('/test2')
@@ -110,7 +127,7 @@ def test2():
         SomeData.prop4])
     count = len(items)
     t2 = time.time()
-    return 'cnt= {}, time= {}s'.format(count, t2-t1)
+    return 'cnt= {}, time= {}'.format(count, t2-t1)
 
 
 @app.route('/cleanup')
