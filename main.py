@@ -129,6 +129,9 @@ def test2():
     t2 = time.time()
     return 'cnt= {}, time= {}'.format(count, t2-t1)
 
+@app.route('/test3')
+def test3():
+    return str(ndb.Key('SomeData', 'default', 'SomeData', 4504393823027200).get())
 
 @app.route('/cleanup')
 def cleanup():
