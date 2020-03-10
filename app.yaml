@@ -14,9 +14,9 @@ libraries:
 - name: grpcio
   version: 1.0.0
 
-vpc_access_connector:
-  name: <FILL IN HERE>
+# vpc_access_connector:
+#   name: <FILL IN HERE>
 
-env_variables:
-  REDIS_CACHE_URL: <FILL IN HERE>
+# env_variables:
+#   REDIS_CACHE_URL: <FILL IN HERE>
 

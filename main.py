@@ -8,7 +8,7 @@ import gc
 app = Flask(__name__)
 
 NEW_NDB = False
-DISABLE_CACHE = False
+DISABLE_CACHE = False  # TODO: update app.yaml if you want caching
 
 if NEW_NDB:
     from google.cloud import ndb
