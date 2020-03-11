@@ -14,8 +14,8 @@ if NEW_NDB:
     from google.cloud import ndb
     logging.getLogger('google.cloud.ndb').setLevel(logging.WARNING)
     def ndb_wsgi_middleware(wsgi_app):
+        ndb_client = ndb.Client()
         def middleware(environ, start_response):
-            ndb_client = ndb.Client()
             if DISABLE_CACHE:
                 global_cache = None
             else:
