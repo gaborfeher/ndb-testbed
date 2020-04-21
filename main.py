@@ -17,8 +17,6 @@ app.logger.addHandler(h1)
 
 
 logging.getLogger('google.cloud.ndb').setLevel(logging.WARNING)
-# import grpc
-# ndb._retry.TRANSIENT_CODES += (grpc.StatusCode.ABORTED,)
 
 
 def ndb_wsgi_middleware(wsgi_app):
@@ -97,6 +95,13 @@ def init(offset):
         logging.info(f'saved until {to_put[-1].key.id()}')
 
     return 'ok'
+
+
+@app.route('/offset/<int:offset>/<int:limit>')
+def offsetget(offset, limit):
+    q = ProductCopy5.query()
+    l = q.fetch(limit=limit, offset=offset)
+    return str([p.key.id() for p in l]) + '\n'
 
 
 @app.route('/cleanup')
